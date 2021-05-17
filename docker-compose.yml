@@ -1,0 +1,69 @@
+version: "3"
+services:
+  # Database
+  postgres-user:
+    build:
+      context: .
+      dockerfile: postgres-user/postgres-user.Dockerfile
+    environment:
+      POSTGRES_PASSWORD: clean_msa
+    image: clean_msa/postgres-user
+    networks:
+      - default
+    ports:
+      - "35432:5432"
+
+  postgres-alarm:
+    build:
+      context: .
+      dockerfile: postgres-alarm/postgres-alarm.Dockerfile
+    environment:
+      POSTGRES_PASSWORD: clean_msa
+    image: clean_msa/postgres-alarm
+    networks:
+      - default
+    ports:
+      - "35433:5432"
+
+  postgres-item:
+    build:
+      context: .
+      dockerfile: postgres-item/postgres-item.Dockerfile
+    environment:
+      POSTGRES_PASSWORD: clean_msa
+    image: clean_msa/postgres-item
+    networks:
+      - default
+    ports:
+      - "35434:5432"
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    command: [sh, -c, "rm -f /data/dump.rdb && redis-server"]
+
+  # API
+  api-user:
+    build:
+      context: ./api-user
+      dockerfile: api-user.Dockerfile
+    image: clean_msa/api-user
+    ports:
+      - "7001:7001"
+
+  api-alarm:
+    build:
+      context: ./api-alarm
+      dockerfile: api-alarm.Dockerfile
+    image: clean_msa/api-alarm
+    ports:
+      - "6001:6001"
+
+  api-item:
+    build:
+      context: ./api-item
+      dockerfile: api-item.Dockerfile
+    image: clean_msa/api-item
+    ports:
+      - "5001:5001"
